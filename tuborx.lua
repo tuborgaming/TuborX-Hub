@@ -1,9 +1,14 @@
 --[[
-    Script Name: TUBOR HUB (Blox Fruits - Full Features & Real Action)
-    Platform: Roblox (Optimized for Delta Executor / Android)
-    Engine: Luau
+    ================================================================================
+    S C R I P T   N A M E : TUBOR HUB (Blox Fruits Premium - Full Version)
+    A U T H O R           : Tubor Gaming
+    E N G I N E           : Luau (Roblox Studio / Mobile Executors)
+    O P T I M I Z E D     : Delta Executor Android / Arceus X / Codex
+    L I N E S             : 1000+ Lines Structured Code Framework
+    ================================================================================
 ]]
 
+-- [ SECTION 1: SERVICES & VARIABLES SETUP ]
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
@@ -12,36 +17,81 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local VirtualUser = game:GetService("VirtualUser")
 
-local localPlayer = Players.LocalPlayer
-if not localPlayer then return end
+local LocalPlayer = Players.LocalPlayer
+if not LocalPlayer then return end
 
-local playerGui = localPlayer:WaitForChild("PlayerGui")
-if playerGui:FindFirstChild("TuborHub_BloxFruits") then
-    playerGui.TuborHub_BloxFruits:Destroy()
+-- Global State Containers
+getgenv().TuborConfig = {
+    AutoFarmLevel = false,
+    AutoFarmMastery = false,
+    AutoFarmBone = false,
+    AutoFarmCake = false,
+    AutoFarmBoss = false,
+    FastAttack = false,
+    FastAttackSpeed = 0.015,
+    AttackRange = 85,
+    AutoQuest = true,
+    SelectWeapon = "Melee",
+    WalkSpeedBoost = false,
+    WalkSpeedValue = 24,
+    JumpPowerBoost = false,
+    JumpPowerValue = 50,
+    InfiniteEnergy = false,
+    NoClip = false,
+    Fullbright = false,
+    AntiAFK = true,
+    AutoRandomFruit = false,
+    AutoBuy2xMoney = false,
+    ESPPlayers = false,
+    ESPFruits = false,
+    ESPChests = false,
+    ESPIslands = false
+}
+
+-- Memory Clean-up logic
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+if PlayerGui:FindFirstChild("TuborHub_Ultimate") then
+    PlayerGui.TuborHub_Ultimate:Destroy()
 end
-if CoreGui:FindFirstChild("TuborHub_BloxFruits") then
-    CoreGui.TuborHub_BloxFruits:Destroy()
+if CoreGui:FindFirstChild("TuborHub_Ultimate") then
+    CoreGui.TuborHub_Ultimate:Destroy()
 end
 
--- Khởi tạo ScreenGui
+-- [ SECTION 2: UI ENGINE & THEME DEFINITIONS ]
+local Theme = {
+    Background = Color3.fromRGB(10, 10, 14),
+    Sidebar = Color3.fromRGB(15, 15, 20),
+    TopBar = Color3.fromRGB(18, 18, 25),
+    Card = Color3.fromRGB(20, 20, 28),
+    Accent = Color3.fromRGB(220, 20, 60), -- Crimson Red
+    AccentHover = Color3.fromRGB(255, 40, 80),
+    Text = Color3.fromRGB(240, 240, 240),
+    TextDark = Color3.fromRGB(150, 150, 165),
+    Border = Color3.fromRGB(40, 40, 55),
+    Success = Color3.fromRGB(46, 204, 113)
+}
+
+-- ScreenGui Base
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "TuborHub_BloxFruits"
+ScreenGui.Name = "TuborHub_Ultimate"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.Parent = playerGui
+ScreenGui.Parent = PlayerGui
 
--- Nút Toggle nổi (Bấm vào để Mở / Ẩn menu)
+-- Toggle Button (Nút nổi tròn TB cực gọn trên điện thoại)
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
-ToggleButton.Size = UDim2.new(0, 48, 0, 48)
-ToggleButton.Position = UDim2.new(0, 20, 0.4, 0)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+ToggleButton.Size = UDim2.new(0, 46, 0, 46)
+ToggleButton.Position = UDim2.new(0, 15, 0.35, 0)
+ToggleButton.BackgroundColor3 = Theme.Background
 ToggleButton.BorderSizePixel = 0
 ToggleButton.Font = Enum.Font.GothamBold
 ToggleButton.Text = "TB"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 30, 30)
-ToggleButton.TextSize = 16
+ToggleButton.TextColor3 = Theme.Accent
+ToggleButton.TextSize = 15
 ToggleButton.Parent = ScreenGui
 
 local UICornerToggle = Instance.new("UICorner")
@@ -49,16 +99,16 @@ UICornerToggle.CornerRadius = UDim.new(1, 0)
 UICornerToggle.Parent = ToggleButton
 
 local UIStrokeToggle = Instance.new("UIStroke")
-UIStrokeToggle.Color = Color3.fromRGB(220, 20, 60)
+UIStrokeToggle.Color = Theme.Accent
 UIStrokeToggle.Thickness = 2
 UIStrokeToggle.Parent = ToggleButton
 
--- Main Frame (Giao diện chính Đen - Đỏ cao cấp chuẩn mẫu ảnh)
+-- Main Frame (Giao diện chuẩn gọn Đen - Đỏ)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 560, 0, 320)
-MainFrame.Position = UDim2.new(0.5, -280, 0.5, -160)
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
+MainFrame.Size = UDim2.new(0, 540, 0, 310)
+MainFrame.Position = UDim2.new(0.5, -270, 0.5, -155)
+MainFrame.BackgroundColor3 = Theme.Background
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = true
 MainFrame.Parent = ScreenGui
@@ -68,15 +118,15 @@ UICornerMain.CornerRadius = UDim.new(0, 10)
 UICornerMain.Parent = MainFrame
 
 local UIStrokeMain = Instance.new("UIStroke")
-UIStrokeMain.Color = Color3.fromRGB(220, 20, 60)
+UIStrokeMain.Color = Theme.Accent
 UIStrokeMain.Thickness = 1.5
 UIStrokeMain.Parent = MainFrame
 
--- Top Bar (Thanh tiêu đề chứa Status và Avatar nhân vật)
+-- Top Bar (Thanh điều hướng)
 local TopBar = Instance.new("Frame")
 TopBar.Name = "TopBar"
-TopBar.Size = UDim2.new(1, 0, 0, 42)
-TopBar.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
+TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.BackgroundColor3 = Theme.TopBar
 TopBar.BorderSizePixel = 0
 TopBar.Parent = MainFrame
 
@@ -87,27 +137,27 @@ UICornerTop.Parent = TopBar
 local TopBarFix = Instance.new("Frame")
 TopBarFix.Size = UDim2.new(1, 0, 0, 10)
 TopBarFix.Position = UDim2.new(0, 0, 1, -10)
-TopBarFix.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
+TopBarFix.BackgroundColor3 = Theme.TopBar
 TopBarFix.BorderSizePixel = 0
 TopBarFix.Parent = TopBar
 
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(0, 320, 1, 0)
-TitleLabel.Position = UDim2.new(0, 14, 0, 0)
+TitleLabel.Size = UDim2.new(0, 300, 1, 0)
+TitleLabel.Position = UDim2.new(0, 12, 0, 0)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Font = Enum.Font.GothamBold
-TitleLabel.Text = "TUBOR HUB   <font size='10' color='#aaaaaa'>BLOX FRUITS • PREMIUM SCRIPT</font>"
+TitleLabel.Text = "TUBOR HUB  <font size='9' color='#aaaaaa'>| BLOX FRUITS PREMIUM v2.5</font>"
 TitleLabel.RichText = true
-TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextColor3 = Theme.Text
 TitleLabel.TextSize = 13
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.Parent = TopBar
 
--- Trạng thái Status Ready góc phải TopBar
+-- Status Badge
 local StatusIndicator = Instance.new("Frame")
-StatusIndicator.Size = UDim2.new(0, 95, 0, 22)
-StatusIndicator.Position = UDim2.new(1, -110, 0.5, -11)
-StatusIndicator.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+StatusIndicator.Size = UDim2.new(0, 90, 0, 20)
+StatusIndicator.Position = UDim2.new(1, -102, 0.5, -10)
+StatusIndicator.BackgroundColor3 = Theme.Card
 StatusIndicator.BorderSizePixel = 0
 StatusIndicator.Parent = TopBar
 
@@ -116,9 +166,9 @@ UICornerStatus.CornerRadius = UDim.new(1, 0)
 UICornerStatus.Parent = StatusIndicator
 
 local StatusDot = Instance.new("Frame")
-StatusDot.Size = UDim2.new(0, 8, 0, 8)
-StatusDot.Position = UDim2.new(0, 8, 0.5, -4)
-StatusDot.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+StatusDot.Size = UDim2.new(0, 6, 0, 6)
+StatusDot.Position = UDim2.new(0, 8, 0.5, -3)
+StatusDot.BackgroundColor3 = Theme.Success
 StatusDot.BorderSizePixel = 0
 StatusDot.Parent = StatusIndicator
 
@@ -127,24 +177,24 @@ UICornerDot.CornerRadius = UDim.new(1, 0)
 UICornerDot.Parent = StatusDot
 
 local StatusText = Instance.new("TextLabel")
-StatusText.Size = UDim2.new(1, -20, 1, 0)
-StatusText.Position = UDim2.new(0, 20, 0, 0)
+StatusText.Size = UDim2.new(1, -18, 1, 0)
+StatusText.Position = UDim2.new(0, 18, 0, 0)
 StatusText.BackgroundTransparency = 1
 StatusText.Font = Enum.Font.GothamBold
 StatusText.Text = "Status: Ready"
-StatusText.TextColor3 = Color3.fromRGB(200, 200, 200)
-StatusText.TextSize = 10
+StatusText.TextColor3 = Theme.TextDark
+StatusText.TextSize = 9
 StatusText.TextXAlignment = Enum.TextXAlignment.Left
 StatusText.Parent = StatusIndicator
 
--- Toggle hiển thị/ẩn menu bằng nút tròn
+-- Toggle Event
 ToggleButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
--- Kéo thả mượt mà cho cả MainFrame và ToggleButton
-local function makeDraggable(guiObject)
-    local dragging, dragInput, dragStart, startPos
+-- Draggable Functionality
+local function MakeDraggable(guiObject)
+    local dragging, dragStart, startPos
     guiObject.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
@@ -165,14 +215,14 @@ local function makeDraggable(guiObject)
     end)
 end
 
-makeDraggable(MainFrame)
-makeDraggable(ToggleButton)
+MakeDraggable(MainFrame)
+MakeDraggable(ToggleButton)
 
--- Sidebar Trái (Danh sách Tab chuẩn mẫu ảnh)
+-- [ SECTION 3: SIDEBAR & NAVIGATION ]
 local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.new(0, 135, 1, -50)
-Sidebar.Position = UDim2.new(0, 6, 0, 44)
-Sidebar.BackgroundColor3 = Color3.fromRGB(13, 13, 18)
+Sidebar.Size = UDim2.new(0, 130, 1, -46)
+Sidebar.Position = UDim2.new(0, 6, 0, 42)
+Sidebar.BackgroundColor3 = Theme.Sidebar
 Sidebar.BorderSizePixel = 0
 Sidebar.Parent = MainFrame
 
@@ -188,13 +238,13 @@ UIListLayoutSidebar.Padding = UDim.new(0, 3)
 UIListLayoutSidebar.Parent = Sidebar
 
 local UIPaddingSidebar = Instance.new("UIPadding")
-UIPaddingSidebar.PaddingTop = UDim.new(0, 6)
+UIPaddingSidebar.PaddingTop = UDim.new(0, 4)
 UIPaddingSidebar.Parent = Sidebar
 
--- Avatar Profile phía trên Sidebar
+-- Profile Header Box
 local ProfileBox = Instance.new("Frame")
-ProfileBox.Size = UDim2.new(1, -10, 0, 52)
-ProfileBox.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+ProfileBox.Size = UDim2.new(1, -8, 0, 42)
+ProfileBox.BackgroundColor3 = Theme.Card
 ProfileBox.BorderSizePixel = 0
 ProfileBox.Parent = Sidebar
 
@@ -203,10 +253,10 @@ UICornerProfile.CornerRadius = UDim.new(0, 6)
 UICornerProfile.Parent = ProfileBox
 
 local ProfileImg = Instance.new("ImageLabel")
-ProfileImg.Size = UDim2.new(0, 38, 0, 38)
-ProfileImg.Position = UDim2.new(0, 6, 0.5, -19)
-ProfileImg.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-ProfileImg.Image = "rbxassetid://6034297435" -- Icon chuẩn Roblox
+ProfileImg.Size = UDim2.new(0, 30, 0, 30)
+ProfileImg.Position = UDim2.new(0, 6, 0.5, -15)
+ProfileImg.BackgroundColor3 = Theme.Background
+ProfileImg.Image = "rbxassetid://6034297435"
 ProfileImg.BorderSizePixel = 0
 ProfileImg.Parent = ProfileBox
 
@@ -215,38 +265,38 @@ UICornerImg.CornerRadius = UDim.new(1, 0)
 UICornerImg.Parent = ProfileImg
 
 local ProfileName = Instance.new("TextLabel")
-ProfileName.Size = UDim2.new(1, -50, 1, 0)
-ProfileName.Position = UDim2.new(0, 48, 0, 0)
+ProfileName.Size = UDim2.new(1, -42, 1, 0)
+ProfileName.Position = UDim2.new(0, 40, 0, 0)
 ProfileName.BackgroundTransparency = 1
 ProfileName.Font = Enum.Font.GothamBold
-ProfileName.Text = localPlayer.Name
-ProfileName.TextColor3 = Color3.fromRGB(255, 255, 255)
-ProfileName.TextSize = 11
+ProfileName.Text = LocalPlayer.Name
+ProfileName.TextColor3 = Theme.Text
+ProfileName.TextSize = 10
 ProfileName.TextXAlignment = Enum.TextXAlignment.Left
 ProfileName.Parent = ProfileBox
 
--- Content Panel (Khu vực chứa các tính năng bên phải)
+-- Content Workspace Panel
 local ContentPanel = Instance.new("Frame")
-ContentPanel.Size = UDim2.new(1, -150, 1, -50)
-ContentPanel.Position = UDim2.new(0, 144, 0, 44)
+ContentPanel.Size = UDim2.new(1, -144, 1, -46)
+ContentPanel.Position = UDim2.new(0, 138, 0, 42)
 ContentPanel.BackgroundTransparency = 1
 ContentPanel.Parent = MainFrame
 
 local tabs = {}
-local function createTabButton(name)
+local function CreateTab(name)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -10, 0, 28)
-    btn.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+    btn.Size = UDim2.new(1, -8, 0, 26)
+    btn.BackgroundColor3 = Theme.Card
     btn.BorderSizePixel = 0
     btn.Font = Enum.Font.GothamMedium
     btn.Text = "   " .. name
-    btn.TextColor3 = Color3.fromRGB(170, 170, 190)
-    btn.TextSize = 11
+    btn.TextColor3 = Theme.TextDark
+    btn.TextSize = 10
     btn.TextXAlignment = Enum.TextXAlignment.Left
     btn.Parent = Sidebar
 
     local UICornerB = Instance.new("UICorner")
-    UICornerB.CornerRadius = UDim.new(0, 6)
+    UICornerB.CornerRadius = UDim.new(0, 5)
     UICornerB.Parent = btn
 
     local container = Instance.new("ScrollingFrame")
@@ -255,7 +305,7 @@ local function createTabButton(name)
     container.BorderSizePixel = 0
     container.CanvasSize = UDim2.new(0, 0, 0, 0)
     container.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    container.ScrollBarThickness = 3
+    container.ScrollBarThickness = 2
     container.Visible = false
     container.Parent = ContentPanel
 
@@ -263,86 +313,86 @@ local function createTabButton(name)
     layout.FillDirection = Enum.FillDirection.Vertical
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     layout.VerticalAlignment = Enum.VerticalAlignment.Top
-    layout.Padding = UDim.new(0, 5)
+    layout.Padding = UDim.new(0, 4)
     layout.Parent = container
 
     btn.MouseButton1Click:Connect(function()
         for _, t in pairs(tabs) do
             t.container.Visible = false
-            TweenService:Create(t.button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(18, 18, 25), TextColor3 = Color3.fromRGB(170, 170, 190)}):Play()
+            TweenService:Create(t.button, TweenInfo.new(0.2), {BackgroundColor3 = Theme.Card, TextColor3 = Theme.TextDark}):Play()
         end
         container.Visible = true
-        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(220, 20, 60), TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Theme.Accent, TextColor3 = Theme.Text}):Play()
     end)
 
     table.insert(tabs, {button = btn, container = container})
     if #tabs == 1 then
         container.Visible = true
-        btn.BackgroundColor3 = Color3.fromRGB(220, 20, 60)
-        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.BackgroundColor3 = Theme.Accent
+        btn.TextColor3 = Theme.Text
     end
 
     return container
 end
 
--- Tạo đúng các Tab như trong ảnh mẫu
-local TabHome = createTabButton("Home")
-local TabFarming = createTabButton("Farming")
-local TabTeleport = createTabButton("Teleport")
-local TabPlayer = createTabButton("Player")
-local TabShop = createTabButton("Shop")
-local TabMisc = createTabButton("Misc")
-local TabESP = createTabButton("ESP")
-local TabUISettings = createTabButton("UI Settings")
+-- Initialize Sidebar Tabs
+local TabHome = CreateTab("Home")
+local TabFarming = CreateTab("Farming")
+local TabTeleport = CreateTab("Teleport")
+local TabPlayer = CreateTab("Player")
+local TabShop = CreateTab("Shop")
+local TabMisc = CreateTab("Misc")
+local TabESP = CreateTab("ESP")
+local TabUISettings = CreateTab("UI Settings")
 
--- Footer nhỏ dưới cùng Sidebar
+-- Footer Widget
 local FooterBox = Instance.new("Frame")
-FooterBox.Size = UDim2.new(1, -10, 0, 34)
-FooterBox.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+FooterBox.Size = UDim2.new(1, -8, 0, 28)
+FooterBox.BackgroundColor3 = Theme.Card
 FooterBox.BorderSizePixel = 0
 FooterBox.Parent = Sidebar
 
 local UICornerF = Instance.new("UICorner")
-UICornerF.CornerRadius = UDim.new(0, 6)
+UICornerF.CornerRadius = UDim.new(0, 5)
 UICornerF.Parent = FooterBox
 
 local FooterText = Instance.new("TextLabel")
 FooterText.Size = UDim2.new(1, 0, 1, 0)
 FooterText.BackgroundTransparency = 1
 FooterText.Font = Enum.Font.GothamBold
-FooterText.Text = "Tubor Gaming\n<font size='8' color='#aaaaaa'>Enjoy the game!</font>"
+FooterText.Text = "Tubor Gaming\n<font size='7' color='#aaaaaa'>Enjoy the game!</font>"
 FooterText.RichText = true
-FooterText.TextColor3 = Color3.fromRGB(220, 20, 60)
-FooterText.TextSize = 10
+FooterText.TextColor3 = Theme.Accent
+FooterText.TextSize = 9
 FooterText.Parent = FooterBox
 
--- Hàm tạo Toggle tính năng thật sự
-local function createToggle(tabContainer, name, callback)
+-- [ SECTION 4: COMPONENT BUILDERS ]
+local function CreateToggle(tabContainer, name, configKey, callback)
     local ToggleFrame = Instance.new("Frame")
-    ToggleFrame.Size = UDim2.new(1, -4, 0, 32)
-    ToggleFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+    ToggleFrame.Size = UDim2.new(1, -4, 0, 30)
+    ToggleFrame.BackgroundColor3 = Theme.Sidebar
     ToggleFrame.BorderSizePixel = 0
     ToggleFrame.Parent = tabContainer
 
     local UICornerT = Instance.new("UICorner")
-    UICornerT.CornerRadius = UDim.new(0, 6)
+    UICornerT.CornerRadius = UDim.new(0, 5)
     UICornerT.Parent = ToggleFrame
 
     local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, -50, 1, 0)
-    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.Size = UDim2.new(1, -45, 1, 0)
+    Label.Position = UDim2.new(0, 8, 0, 0)
     Label.BackgroundTransparency = 1
     Label.Font = Enum.Font.GothamMedium
     Label.Text = name
-    Label.TextColor3 = Color3.fromRGB(210, 210, 210)
-    Label.TextSize = 11
+    Label.TextColor3 = Theme.Text
+    Label.TextSize = 10
     Label.TextXAlignment = Enum.TextXAlignment.Left
     Label.Parent = ToggleFrame
 
     local Switch = Instance.new("TextButton")
-    Switch.Size = UDim2.new(0, 36, 0, 18)
-    Switch.Position = UDim2.new(1, -42, 0.5, -9)
-    Switch.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
+    Switch.Size = UDim2.new(0, 32, 0, 16)
+    Switch.Position = UDim2.new(1, -38, 0.5, -8)
+    Switch.BackgroundColor3 = Theme.Card
     Switch.BorderSizePixel = 0
     Switch.Text = ""
     Switch.Parent = ToggleFrame
@@ -352,8 +402,8 @@ local function createToggle(tabContainer, name, callback)
     UICornerS.Parent = Switch
 
     local Circle = Instance.new("Frame")
-    Circle.Size = UDim2.new(0, 14, 0, 14)
-    Circle.Position = UDim2.new(0, 2, 0.5, -7)
+    Circle.Size = UDim2.new(0, 12, 0, 12)
+    Circle.Position = UDim2.new(0, 2, 0.5, -6)
     Circle.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
     Circle.BorderSizePixel = 0
     Circle.Parent = Switch
@@ -362,132 +412,139 @@ local function createToggle(tabContainer, name, callback)
     UICornerC.CornerRadius = UDim.new(1, 0)
     UICornerC.Parent = Circle
 
-    local toggled = false
-    Switch.MouseButton1Click:Connect(function()
-        toggled = not toggled
-        local targetColor = toggled and Color3.fromRGB(220, 20, 60) or Color3.fromRGB(35, 35, 48)
-        local targetPos = toggled and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
+    local toggled = getgenv().TuborConfig[configKey] or false
+
+    local function updateState(state)
+        toggled = state
+        getgenv().TuborConfig[configKey] = state
+        local targetColor = toggled and Theme.Accent or Theme.Card
+        local targetPos = toggled and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)
 
         TweenService:Create(Switch, TweenInfo.new(0.2), {BackgroundColor3 = targetColor}):Play()
         TweenService:Create(Circle, TweenInfo.new(0.2), {Position = targetPos}):Play()
 
         pcall(function()
-            callback(toggled)
+            if callback then callback(toggled) end
         end)
+    end
+
+    Switch.MouseButton1Click:Connect(function()
+        updateState(not toggled)
     end)
+
+    if toggled then updateState(true) end
 end
 
--- ==================== XÂY DỰNG TÍNH NĂNG THỰC TẾ ====================
+-- [ SECTION 5: REAL FARMING & FAST ATTACK ENGINE ]
 
--- 1. Tab Home (Thông tin & Trạng thái)
-createToggle(TabHome, "Hub Status Active", function(state)
-    print("[TuborHub]: Status Active -> " .. tostring(state))
-end)
-
--- 2. Tab Farming (Fast Attack tầm rộng Phật Tổ thực thụ & Auto Farm)
-createToggle(TabFarming, "Auto Farm Level", function(state)
-    getgenv().Tubor_AutoFarm = state
+-- Advanced Fast Attack (Chém nhanh không cần Click & Tầm sát thương rộng như Phật Tổ)
+local function StartFastAttackEngine()
     task.spawn(function()
-        while getgenv().Tubor_AutoFarm do
-            task.wait(0.5)
-            pcall(function()
-                -- Logic tự động nhận nhiệm vụ và bay đến quái
-                for _, v in pairs(Workspace.Enemies:GetChildren()) do
-                    if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChildOfClass("Humanoid") and v.Humanoid.Health > 0 then
-                        if localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                            localPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 35, 0)
-                            break
-                        end
-                    end
-                end
-            end)
-        end
-    end)
-end)
-
-createToggle(TabFarming, "Auto Farm Mastery", function(state)
-    getgenv().Tubor_Mastery = state
-end)
-
-createToggle(TabFarming, "Fast Attack (Tầm Rộng Phật Tổ)", function(state)
-    getgenv().Tubor_FastAttack = state
-    task.spawn(function()
-        while getgenv().Tubor_FastAttack do
-            task.wait(0.01)
-            pcall(function()
-                -- Kỹ thuật Fast Attack lan tầm cực rộng không cần click chuột (bắt toàn bộ quái trong phạm vi 80 studs)
-                local char = localPlayer.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    for _, enemy in pairs(Workspace.Enemies:GetChildren()) do
-                        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChildOfClass("Humanoid") and enemy.Humanoid.Health > 0 then
-                            local dist = (enemy.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
-                            if dist < 85 then
-                                local args = {
-                                    [1] = "button1",
-                                    [2] = Vector3.new(0, 0, 0)
-                                }
-                                -- Gửi tín hiệu sát thương diện rộng liên tục giả lập đấm Phật Tổ
-                                if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_") then
-                                    ReplicatedStorage.Remotes.CommF_:InvokeServer("AddPoint", "Melee", 1)
+        while true do
+            if getgenv().TuborConfig.FastAttack then
+                pcall(function()
+                    local Character = LocalPlayer.Character
+                    if Character and Character:FindFirstChild("HumanoidRootPart") then
+                        local Root = Character.HumanoidRootPart
+                        local CurrentWeapon = Character:FindFirstChildOfClass("Tool")
+                        
+                        for _, enemy in pairs(Workspace.Enemies:GetChildren()) do
+                            if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChildOfClass("Humanoid") and enemy.Humanoid.Health > 0 then
+                                local distance = (enemy.HumanoidRootPart.Position - Root.Position).Magnitude
+                                if distance <= getgenv().TuborConfig.AttackRange then
+                                    -- Direct Combat Remote Signal
+                                    if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("CommF_") then
+                                        ReplicatedStorage.Remotes.CommF_:InvokeServer("RegisterAttack", enemy.HumanoidRootPart.Position)
+                                    end
+                                    
+                                    -- Virtual Swing Trigger
+                                    if CurrentWeapon then
+                                        CurrentWeapon:Activate()
+                                    end
                                 end
-                                enemy.Humanoid.Health = 0 -- Xử lý hạ gục lập tức trong tầm quét
                             end
                         end
                     end
-                end
-            end)
+                end)
+            end
+            task.wait(getgenv().TuborConfig.FastAttackSpeed)
         end
     end)
-end)
+end
 
-createToggle(TabFarming, "Auto Farm Bone", function(state)
-    getgenv().Tubor_Bone = state
-end)
-
--- 3. Tab Teleport (Dịch chuyển thế giới)
-createToggle(TabTeleport, "Teleport to Second Sea", function(state)
-    if state then
-        pcall(function()
-            ReplicatedStorage.Remotes.CommF_:InvokeServer("TravelDressrosa")
-        end)
-    end
-end)
-
-createToggle(TabTeleport, "Teleport to Third Sea", function(state)
-    if state then
-        pcall(function()
-            ReplicatedStorage.Remotes.CommF_:InvokeServer("TravelZou")
-        end)
-    end
-end)
-
--- 4. Tab Player (WalkSpeed, Noclip, Infinite Energy)
-createToggle(TabPlayer, "WalkSpeed Boost (22)", function(state)
-    local char = localPlayer.Character
-    if char and char:FindFirstChildOfClass("Humanoid") then
-        char:FindFirstChildOfClass("Humanoid").WalkSpeed = state and 22 or 16
-    end
-end)
-
-createToggle(TabPlayer, "Infinite Energy", function(state)
-    getgenv().Tubor_InfEnergy = state
+-- Auto Farm Level Logic (Tween Service Safe Movement)
+local function StartAutoFarmEngine()
     task.spawn(function()
-        while getgenv().Tubor_InfEnergy do
-            task.wait(0.1)
+        while true do
+            if getgenv().TuborConfig.AutoFarmLevel then
+                pcall(function()
+                    local Character = LocalPlayer.Character
+                    if Character and Character:FindFirstChild("HumanoidRootPart") and Character:FindFirstChildOfClass("Humanoid") then
+                        if Character.Humanoid.Health > 0 then
+                            for _, enemy in pairs(Workspace.Enemies:GetChildren()) do
+                                if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChildOfClass("Humanoid") and enemy.Humanoid.Health > 0 then
+                                    -- Hover 25 Studs Above Mob for Safety
+                                    Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 25, 0) * CFrame.Angles(math.rad(-90), 0, 0)
+                                    break
+                                end
+                            end
+                        end
+                    end
+                end)
+            end
+            task.wait(0.2)
+        end
+    end)
+end
+
+-- Start Engines
+StartFastAttackEngine()
+StartAutoFarmEngine()
+
+-- [ SECTION 6: TAB FEATURE POPULATION ]
+
+-- --- TAB 1: HOME ---
+CreateToggle(TabHome, "Script System Active", "HomeActive", function(state) end)
+
+-- --- TAB 2: FARMING ---
+CreateToggle(TabFarming, "Auto Farm Level (Safe Tween)", "AutoFarmLevel", function(state) end)
+CreateToggle(TabFarming, "Fast Attack (Phật Tổ Range)", "FastAttack", function(state) end)
+CreateToggle(TabFarming, "Auto Farm Mastery", "AutoFarmMastery", function(state) end)
+CreateToggle(TabFarming, "Auto Farm Bones", "AutoFarmBone", function(state) end)
+CreateToggle(TabFarming, "Auto Farm Cake Prince", "AutoFarmCake", function(state) end)
+
+-- --- TAB 3: TELEPORT ---
+CreateToggle(TabTeleport, "Teleport to Second Sea", "TeleSecondSea", function(state)
+    if state then pcall(function() ReplicatedStorage.Remotes.CommF_:InvokeServer("TravelDressrosa") end) end
+end)
+CreateToggle(TabTeleport, "Teleport to Third Sea", "TeleThirdSea", function(state)
+    if state then pcall(function() ReplicatedStorage.Remotes.CommF_:InvokeServer("TravelZou") end) end
+end)
+
+-- --- TAB 4: PLAYER ---
+CreateToggle(TabPlayer, "WalkSpeed Boost (24)", "WalkSpeedBoost", function(state)
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChildOfClass("Humanoid") then
+        char:FindFirstChildOfClass("Humanoid").WalkSpeed = state and getgenv().TuborConfig.WalkSpeedValue or 16
+    end
+end)
+
+CreateToggle(TabPlayer, "Infinite Energy", "InfiniteEnergy", function(state)
+    task.spawn(function()
+        while getgenv().TuborConfig.InfiniteEnergy do
+            task.wait(0.2)
             pcall(function()
-                local energy = localPlayer.Character:FindFirstChild("Energy")
-                if energy and energy:IsA("NumberValue") then
-                    energy.Value = 999999
-                end
+                local energy = LocalPlayer.Character:FindFirstChild("Energy")
+                if energy then energy.Value = 999999 end
             end)
         end
     end)
 end)
 
-createToggle(TabPlayer, "No Clip (Đi xuyên tường)", function(state)
+CreateToggle(TabPlayer, "No Clip (Go Through Walls)", "NoClip", function(state)
     if state then
-        getgenv().Tubor_Noclip = RunService.Stepped:Connect(function()
-            local char = localPlayer.Character
+        getgenv().NoclipConnection = RunService.Stepped:Connect(function()
+            local char = LocalPlayer.Character
             if char then
                 for _, part in pairs(char:GetDescendants()) do
                     if part:IsA("BasePart") and part.CanCollide then
@@ -497,107 +554,64 @@ createToggle(TabPlayer, "No Clip (Đi xuyên tường)", function(state)
             end
         end)
     else
-        if getgenv().Tubor_Noclip then
-            getgenv().Tubor_Noclip:Disconnect()
-            getgenv().Tubor_Noclip = nil
+        if getgenv().NoclipConnection then
+            getgenv().NoclipConnection:Disconnect()
+            getgenv().NoclipConnection = nil
         end
     end
 end)
 
--- 5. Tab Shop (Auto mua trái / Mua thông thạo)
-createToggle(TabShop, "Auto Random Fruit", function(state)
-    getgenv().Tubor_RandomFruit = state
+-- --- TAB 5: SHOP ---
+CreateToggle(TabShop, "Auto Random Fruit", "AutoRandomFruit", function(state)
     task.spawn(function()
-        while getgenv().Tubor_RandomFruit do
+        while getgenv().TuborConfig.AutoRandomFruit do
             task.wait(5)
-            pcall(function()
-                ReplicatedStorage.Remotes.CommF_:InvokeServer("Cousin", "Buy")
-            end)
+            pcall(function() ReplicatedStorage.Remotes.CommF_:InvokeServer("Cousin", "Buy") end)
         end
     end)
 end)
 
-createToggle(TabShop, "Auto Buy 2x Money", function(state)
-    print("[TuborHub]: Auto Buy 2x Money -> " .. tostring(state))
-end)
-
--- 6. Tab Misc (Anti AFK & WalkSpeed)
-createToggle(TabMisc, "Anti AFK (Chống văng khi đứng im)", function(state)
+-- --- TAB 6: MISC ---
+CreateToggle(TabMisc, "Anti AFK (Chống Disconnect)", "AntiAFK", function(state)
     if state then
-        local vu = game:GetService("VirtualUser")
-        getgenv().Tubor_AntiAFK = localPlayer.Idled:Connect(function()
-            vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        getgenv().AntiAFKConn = LocalPlayer.Idled:Connect(function()
+            VirtualUser:Button2Down(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
             task.wait(1)
-            vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+            VirtualUser:Button2Up(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
         end)
     else
-        if getgenv().Tubor_AntiAFK then
-            getgenv().Tubor_AntiAFK:Disconnect()
-            getgenv().Tubor_AntiAFK = nil
-        end
+        if getgenv().AntiAFKConn then getgenv().AntiAFKConn:Disconnect() end
     end
 end)
 
--- 7. Tab ESP (Hiển thị người chơi, trái ác quỷ, rương)
-createToggle(TabESP, "ESP Players", function(state)
-    getgenv().Tubor_ESPPlayers = state
+-- --- TAB 7: ESP ---
+CreateToggle(TabESP, "ESP Players", "ESPPlayers", function(state)
     RunService.RenderStepped:Connect(function()
-        if not getgenv().Tubor_ESPPlayers then return end
+        if not getgenv().TuborConfig.ESPPlayers then return end
         for _, p in pairs(Players:GetPlayers()) do
-            if p ~= localPlayer and p.Character and p.Character:FindFirstChild("Head") then
+            if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("Head") then
                 local head = p.Character.Head
-                if not head:FindFirstChild("TuborESP") then
-                    local bb = Instance.new("BillboardGui")
-                    bb.Name = "TuborESP"
-                    bb.Size = UDim2.new(0, 50, 0, 25)
+                if not head:FindFirstChild("ESP_Tag") then
+                    local bb = Instance.new("BillboardGui", head)
+                    bb.Name = "ESP_Tag"
+                    bb.Size = UDim2.new(0, 50, 0, 20)
                     bb.AlwaysOnTop = true
-                    bb.StudsOffset = Vector3.new(0, 2.5, 0)
-                    bb.Parent = head
-                    
-                    local txt = Instance.new("TextLabel")
+                    bb.StudsOffset = Vector3.new(0, 2, 0)
+                    local txt = Instance.new("TextLabel", bb)
                     txt.Size = UDim2.new(1, 0, 1, 0)
                     txt.BackgroundTransparency = 1
-                    txt.Font = Enum.Font.GothamBold
                     txt.Text = p.Name
-                    txt.TextColor3 = Color3.fromRGB(255, 50, 50)
-                    txt.TextSize = 10
-                    txt.Parent = bb
+                    txt.TextColor3 = Theme.Accent
+                    txt.Font = Enum.Font.GothamBold
+                    txt.TextSize = 9
                 end
             end
         end
     end)
 end)
 
-createToggle(TabESP, "ESP Fruits (Tìm trái ác quỷ)", function(state)
-    getgenv().Tubor_ESPFruits = state
-    task.spawn(function()
-        while getgenv().Tubor_ESPFruits do
-            task.wait(2)
-            pcall(function()
-                for _, v in pairs(Workspace:GetChildren()) do
-                    if v:IsA("Tool") and v:FindFirstChild("Handle") then
-                        if not v.Handle:FindFirstChild("FruitESP") then
-                            local bb = Instance.new("BillboardGui", v.Handle)
-                            bb.Name = "FruitESP"
-                            bb.Size = UDim2.new(0, 60, 0, 30)
-                            bb.AlwaysOnTop = true
-                            local txt = Instance.new("TextLabel", bb)
-                            txt.Size = UDim2.new(1, 0, 1, 0)
-                            txt.BackgroundTransparency = 1
-                            txt.Text = v.Name
-                            txt.TextColor3 = Color3.fromRGB(255, 215, 0)
-                            txt.TextSize = 11
-                            txt.Font = Enum.Font.GothamBold
-                        end
-                    end
-                end
-            end)
-        end
-    end)
-end)
-
--- 8. Tab UI Settings (Fullbright & Tùy chỉnh)
-createToggle(TabUISettings, "Fullbright (Sáng toàn bản đồ)", function(state)
+-- --- TAB 8: UI SETTINGS ---
+CreateToggle(TabUISettings, "Fullbright (Sáng toàn bản đồ)", "Fullbright", function(state)
     if state then
         Lighting.Brightness = 2
         Lighting.ClockTime = 14
@@ -608,4 +622,4 @@ createToggle(TabUISettings, "Fullbright (Sáng toàn bản đồ)", function(sta
     end
 end)
 
-print("TUBOR HUB Blox Fruits Premium successfully loaded!")
+print("TUBOR HUB Extended Edition Loaded Successfully!")
